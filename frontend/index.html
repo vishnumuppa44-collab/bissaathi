@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BIS Saathi</title>
+  <style>
+    :root {
+      --navy: #073b61;
+      --blue: #126aa0;
+      --orange: #f28c28;
+      --ink: #17364d;
+      --muted: #667e90;
+      --line: #d9e7ef;
+      --pale: #edf7fc;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: #f4f8fb;
+    }
+
+    button, input { font: inherit; }
+
+    .language-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #073b61 0%, #126aa0 55%, #2492cc 100%);
+    }
+
+    .language-card {
+      width: min(440px, 100%);
+      padding: 42px 38px;
+      background: #fff;
+      border-radius: 26px;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.28);
+      text-align: center;
+    }
+
+    .bis-symbol {
+      width: 105px;
+      height: 82px;
+      margin: 0 auto 14px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, var(--orange), #ffbe58);
+      box-shadow: 0 10px 26px rgba(242, 140, 40, 0.32);
+    }
+
+    .language-card h1 {
+      margin: 0 0 7px;
+      color: var(--navy);
+      font-size: 30px;
+    }
+
+    .language-card p {
+      margin: 0 0 27px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .language-button {
+      width: 100%;
+      margin: 12px 0;
+      padding: 16px 19px;
+      border: 2px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      cursor: pointer;
+      color: var(--navy);
+      font-size: 16px;
+      font-weight: 700;
+      text-align: left;
+      transition: 0.2s ease;
+    }
+
+    .language-button:hover {
+      transform: translateX(5px);
+      border-color: var(--blue);
+      background: #f1f9fd;
+    }
+
+    .language-code {
+      display: grid;
+      place-items: center;
+      width: 39px;
+      height: 39px;
+      border-radius: 11px;
+      background: var(--pale);
+      color: var(--blue);
+      font-size: 13px;
+    }
+
+    .app {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .topbar {
+      padding: 13px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: #fff;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .brand-icon {
+      width: 45px;
+      height: 45px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--orange);
+      color: white;
+      font-weight: 800;
+    }
+
+    .brand h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 20px;
+    }
+
+    .brand p {
+      margin: 3px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .small-button {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 8px 11px;
+      background: #fff;
+      color: var(--blue);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .page-grid {
+      display: grid;
+      grid-template-columns: 285px 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .sidebar, .chat-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+    }
+
+    .sidebar { padding: 22px; }
+
+    .sidebar h2 {
+      margin: 0 0 8px;
+      color: var(--navy);
+      font-size: 17px;
+    }
+
+    .sidebar p, .sidebar li {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .sidebar ul { padding-left: 20px; }
+
+    .warning {
+      margin-top: 20px;
+      padding: 12px;
+      border-left: 4px solid var(--orange);
+      border-radius: 7px;
+      background: #fff5e4;
+      color: #76551c;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .chat-card {
+      min-height: 640px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-top {
+      padding: 18px 20px;
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .chat-top h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 19px;
+    }
+
+    .chat-top p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status {
+      padding: 7px 10px;
+      border-radius: 100px;
+      background: #fff3df;
+      color: #a8640c;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status.ready {
+      background: #e7f7ee;
+      color: #157552;
+    }
+
+    .status.error {
+      background: #fdeaea;
+      color: #b32727;
+    }
+
+    .messages {
+      flex: 1;
+      max-height: 465px;
+      overflow-y: auto;
+      padding: 20px;
+      background: linear-gradient(#fbfeff, #fff);
+    }
+
+    .message {
+      max-width: 85%;
+      margin-bottom: 14px;
+      padding: 13px 15px;
+      border-radius: 15px;
+      white-space: pre-wrap;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .bot-message {
+      border: 1px solid #d3e9f4;
+      border-top-left-radius: 4px;
+      background: #ebf7fc;
+    }
+
+    .user-message {
+      margin-left: auto;
+      border-top-right-radius: 4px;
+      background: var(--navy);
+      color: #fff;
+    }
+
+    .source-area {
+      display: none;
+      padding: 14px 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .source-area h3 {
+      margin: 0 0 8px;
+      color: var(--navy);
+      font-size: 13px;
+    }
+
+    details {
+      margin: 7px 0;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #f4f9fc;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    summary {
+      color: var(--blue);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    details p { line-height: 1.45; }
+
+    .composer {
+      display: flex;
+      gap: 10px;
+      padding: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .composer input {
+      flex: 1;
+      padding: 13px;
+      border: 1px solid #c9dce7;
+      border-radius: 11px;
+      outline: none;
+    }
+
+    .composer input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(18, 106, 160, 0.12);
+    }
+
+    .send-button {
+      padding: 0 19px;
+      border: 0;
+      border-radius: 11px;
+      background: var(--blue);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .send-button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 760px) {
+      .page-grid { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .app { padding: 12px; }
+      .language-card { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="language-screen" id="languageScreen">
+    <div class="language-card">
+      <div class="bis-symbol">BIS</div>
+      <h1 id="welcomeHeading">Namaste!</h1>
+      <p id="welcomeText">Welcome to BIS Saathi<br>Your AI guide for Indian Standards and BIS services.</p>
+
+      <button class="language-button" onclick="chooseLanguage('en')">
+        <span class="language-code">EN</span> English
+      </button>
+      <button class="language-button" onclick="chooseLanguage('hi')">
+        <span class="language-code">हि</span> हिंदी
+      </button>
+      <button class="language-button" onclick="chooseLanguage('te')">
+        <span class="language-code">తె</span> తెలుగు
+      </button>
+    </div>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">BIS</div>
+        <div>
+          <h1>BIS Saathi</h1>
+          <p id="tagline">Your AI guide for Indian Standards</p>
+        </div>
+      </div>
+      <button class="small-button" onclick="showLanguageScreen()" id="languageButton">Language</button>
+    </header>
+
+    <main class="page-grid">
+      <aside class="sidebar">
+        <h2 id="helpHeading">How BIS Saathi helps</h2>
+        <p id="helpText">Ask questions about Indian Standards, certification, registrations, and consumer support.</p>
+        <ul id="helpList">
+          <li>Answers based on indexed documents</li>
+          <li>Source excerpts for verification</li>
+          <li>English, Hindi, and Telugu support</li>
+        </ul>
+        <div class="warning" id="warningText">
+          Important: Verify current requirements through official BIS sources before taking action.
+        </div>
+      </aside>
+
+      <section class="chat-card">
+        <div class="chat-top">
+          <div>
+            <h2 id="chatHeading">Ask BIS Saathi</h2>
+            <p id="chatSubtitle">Answers are based on your indexed documents.</p>
+          </div>
+          <span class="status" id="serverStatus">Checking server…</span>
+        </div>
+
+        <div class="messages" id="messages"></div>
+
+        <div class="source-area" id="sourceArea">
+          <h3 id="sourceHeading">Sources used</h3>
+          <div id="sourceList"></div>
+        </div>
+
+        <div class="composer">
+          <input
+            id="questionInput"
+            placeholder="Ask a question about BIS services or standards…"
+            onkeydown="if (event.key === 'Enter') sendQuestion()"
+          />
+          <button class="send-button" id="sendButton" onclick="sendQuestion()">Send</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+  let selectedLanguage = "en";
+  let conversationHistory = [];
+
+  const translations = {
+    en: {
+      tagline: "Your AI guide for Indian Standards",
+      language: "Language",
+      helpHeading: "How BIS Saathi helps",
+      helpText: "Ask questions about Indian Standards, certification, registrations, and consumer support.",
+      helpList: [
+        "Answers based on indexed documents",
+        "Source excerpts for verification",
+        "English, Hindi, and Telugu support"
+      ],
+      warning: "Important: Verify current requirements through official BIS sources before taking action.",
+      chatHeading: "Ask BIS Saathi",
+      chatSubtitle: "Answers are based on your indexed documents.",
+      placeholder: "Ask a question about BIS services or standards…",
+      send: "Send",
+      checking: "Checking server…",
+      ready: "System ready",
+      offline: "Backend unavailable",
+      hello: "Namaste! I am BIS Saathi. How can I help you today?",
+      sources: "Sources used",
+      errorPrefix: "Error: "
+    },
+    hi: {
+      tagline: "भारतीय मानकों के लिए आपका AI मार्गदर्शक",
+      language: "भाषा",
+      helpHeading: "BIS साथी कैसे मदद करता है",
+      helpText: "भारतीय मानकों, प्रमाणन, पंजीकरण और उपभोक्ता सहायता के बारे में पूछें।",
+      helpList: [
+        "अनुक्रमित दस्तावेज़ों पर आधारित उत्तर",
+        "सत्यापन के लिए स्रोत अंश",
+        "अंग्रेज़ी, हिंदी और तेलुगु सहायता"
+      ],
+      warning: "महत्वपूर्ण: कार्रवाई से पहले आधिकारिक BIS स्रोतों से वर्तमान आवश्यकताएँ सत्यापित करें।",
+      chatHeading: "BIS साथी से पूछें",
+      chatSubtitle: "उत्तर आपके अनुक्रमित दस्तावेज़ों पर आधारित हैं।",
+      placeholder: "BIS सेवाओं या मानकों के बारे में पूछें…",
+      send: "भेजें",
+      checking: "सर्वर जाँचा जा रहा है…",
+      ready: "सिस्टम तैयार है",
+      offline: "बैकएंड उपलब्ध नहीं है",
+      hello: "नमस्ते! मैं BIS साथी हूँ। मैं आपकी कैसे मदद कर सकता हूँ?",
+      sources: "उपयोग किए गए स्रोत",
+      errorPrefix: "त्रुटि: "
+    },
+    te: {
+      tagline: "భారతీయ ప్రమాణాల కోసం మీ AI మార్గదర్శి",
+      language: "భాష",
+      helpHeading: "BIS సాథీ ఎలా సహాయపడుతుంది",
+      helpText: "భారతీయ ప్రమాణాలు, ధ్రువీకరణ, రిజిస్ట్రేషన్ మరియు వినియోగదారు సహాయం గురించి అడగండి।",
+      helpList: [
+        "ఇండెక్స్ చేసిన పత్రాల ఆధారంగా సమాధానాలు",
+        "ధృవీకరణ కోసం మూల భాగాలు",
+        "ఇంగ్లీష్, హిందీ మరియు తెలుగు మద్దతు"
+      ],
+      warning: "ముఖ్యమైనది: చర్య తీసుకునే ముందు అధికారిక BIS మూలాల ద్వారా ప్రస్తుత అవసరాలను ధృవీకరించండి।",
+      chatHeading: "BIS సాథీని అడగండి",
+      chatSubtitle: "మీ ఇండెక్స్ చేసిన పత్రాల ఆధారంగా సమాధానాలు ఉంటాయి।",
+      placeholder: "BIS సేవలు లేదా ప్రమాణాల గురించి అడగండి…",
+      send: "పంపండి",
+      checking: "సర్వర్ తనిఖీ అవుతోంది…",
+      ready: "సిస్టమ్ సిద్ధంగా ఉంది",
+      offline: "బ్యాకెండ్ అందుబాటులో లేదు",
+      hello: "నమస్తే! నేను BIS సాథీని. నేను మీకు ఎలా సహాయపడగలను?",
+      sources: "ఉపయోగించిన మూలాలు",
+      errorPrefix: "లోపం: "
+    }
+  };
+
+  function getText() {
+    return translations[selectedLanguage];
+  }
+
+  function chooseLanguage(language) {
+    selectedLanguage = language;
+    document.getElementById("languageScreen").style.display = "none";
+    updateInterfaceText();
+    startNewChat();
+    checkServer();
+  }
+
+  function showLanguageScreen() {
+    document.getElementById("languageScreen").style.display = "grid";
+  }
+
+  function updateInterfaceText() {
+    const text = getText();
+
+    document.getElementById("tagline").textContent = text.tagline;
+    document.getElementById("languageButton").textContent = text.language;
+    document.getElementById("helpHeading").textContent = text.helpHeading;
+    document.getElementById("helpText").textContent = text.helpText;
+    document.getElementById("helpList").innerHTML = text.helpList.map(item => `<li>${item}</li>`).join("");
+    document.getElementById("warningText").textContent = text.warning;
+    document.getElementById("chatHeading").textContent = text.chatHeading;
+    document.getElementById("chatSubtitle").textContent = text.chatSubtitle;
+    document.getElementById("questionInput").placeholder = text.placeholder;
+    document.getElementById("sendButton").textContent = text.send;
+    document.getElementById("sourceHeading").textContent = text.sources;
+  }
+
+  function addMessage(content, type) {
+    const message = document.createElement("div");
+    message.className = `message ${type === "user" ? "user-message" : "bot-message"}`;
+    message.textContent = content;
+    document.getElementById("messages").appendChild(message);
+    document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+  }
+
+  function startNewChat() {
+    conversationHistory = [];
+    document.getElementById("messages").innerHTML = "";
+    document.getElementById("sourceArea").style.display = "none";
+    addMessage(getText().hello, "bot");
+  }
+
+  async function checkServer() {
+  const status = document.getElementById("serverStatus");
+  status.textContent = getText().checking;
+  status.className = "status";
+
+  try {
+    const res = await fetch("http://127.0.0.1:8001/api/health", {
+      method: "GET"
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    if (data.ai_configured) {
+      status.textContent = getText().ready;
+      status.className = "status ready";
+    } else {
+      status.textContent = getText().offline;
+      status.className = "status error";
+    }
+  } catch (error) {
+    console.error("Health check failed:", error);
+    status.textContent = getText().offline;
+    status.className = "status error";
+  }
+}
+
+  async function sendQuestion() {
+    const input = document.getElementById("questionInput");
+    const button = document.getElementById("sendButton");
+    const question = input.value.trim();
+
+    if (!question) return;
+
+    addMessage(question, "user");
+    input.value = "";
+    button.disabled = true;
+    button.textContent = "…";
+
+    try {
+      const response = await fetch("http://127.0.0.1:8001/api/chat",  {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: question,
+          language: selectedLanguage,
+          history: conversationHistory
+        })
+      });
+
+      const rawText = await response.text();
+      let data;
+
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        throw new Error(rawText || `Server returned HTTP ${response.status}`);
+      }
+
+      if (!response.ok) {
+        throw new Error(data.detail || "The server could not answer this request.");
+      }
+
+      addMessage(data.answer, "bot");
+
+      conversationHistory.push(
+        { role: "user", content: question },
+        { role: "assistant", content: data.answer }
+      );
+
+      const sourceArea = document.getElementById("sourceArea");
+      const sourceList = document.getElementById("sourceList");
+
+      if (data.citations && data.citations.length > 0) {
+        sourceList.innerHTML = data.citations.map(source => `
+          <details>
+            <summary>[${source.label}] ${source.source} — chunk ${source.chunk}</summary>
+            <p>${source.excerpt}</p>
+          </details>
+        `).join("");
+        sourceArea.style.display = "block";
+      } else {
+        sourceArea.style.display = "none";
+      }
+
+    } catch (error) {
+      console.error("Chat request failed:", error);
+      addMessage(getText().errorPrefix + error.message, "bot");
+    } finally {
+      button.disabled = false;
+      button.textContent = getText().send;
+    }
+  }
+
+  updateInterfaceText();
+  startNewChat();
+  checkServer();
+</script>
+</body>
+</html>
