@@ -25,7 +25,7 @@ class ChatMessage(BaseModel):
     language: str
     history: Optional[List[dict]] = []
 
-def model_or_error():
+def get_genai_client():
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if not api_key:
         raise HTTPException(
@@ -33,8 +33,38 @@ def model_or_error():
             detail="AI is not configured. Add GEMINI_API_KEY to .env, then restart the server."
         )
     genai.configure(api_key=api_key)
-    # Use the older, widely supported alias
-    return genai.GenerativeModel("gemini-pro")
+    return genai
+
+@app.get("/")
+def root():
+    return {"message": "BIS Saathi API is running. Visit /api/health for status."}
+
+@app.get("/api/health")
+def health():
+    try:
+        client = get_genai_client()
+        # Just check we can configure; don't create a model here
+        return {"status": "ok", "ai": "configured"}
+    except Exception as e:
+        return {"status": "ok", "ai": "error", "detail": str(e)}
+
+@app.get("/api/models")
+def list_models():
+    try:
+        client = get_genai_client()
+        # List all models visible to this API key
+        models = list(client.list_models())
+        # Return a small slice of info for each
+        result = []
+        for m in models:
+            result.append({
+                "name": getattr(m, "name", None),
+                "display_name": getattr(m, "display_name", None),
+                "supported_methods": getattr(m, "supported_generation_methods", None),
+            })
+        return {"models": result}
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Failed to list models: {e}")
 
 def build_prompt(message: str, language: str, history: list) -> str:
     lang_name = {
@@ -86,28 +116,14 @@ Respond in {lang_name}, clearly and helpfully.
 """
     return prompt
 
-@app.get("/")
-def root():
-    return {"message": "BIS Saathi API is running. Visit /api/health for status."}
-
-@app.get("/api/health")
-def health():
-    try:
-        model = model_or_error()
-        return {
-            "status": "ok",
-            "ai": "connected",
-            "model_name": model.model_name
-        }
-    except Exception as e:
-        return {"status": "ok", "ai": "error", "detail": str(e)}
-
 @app.post("/api/chat")
 def chat(req: ChatMessage):
     try:
-        model = model_or_error()
-    except Exception:
-        raise
+        client = get_genai_client()
+        # Try the simplest known model name
+        model = client.GenerativeModel("gemini-1.5-flash")
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"AI client error: {e}")
 
     try:
         prompt = build_prompt(req.message, req.language, req.history or [])
