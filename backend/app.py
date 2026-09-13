@@ -7,6 +7,7 @@ from typing import Any
 import google.generativeai as genai
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -22,6 +23,15 @@ load_dotenv(PROJECT_DIR / ".env")
 
 
 app = FastAPI(title="BIS Saathi API", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # allow all origins (fine for demo; restrict later if needed)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 
