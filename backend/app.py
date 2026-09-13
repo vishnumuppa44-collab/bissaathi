@@ -50,30 +50,25 @@ def build_prompt(message: str, language: str, history: list) -> str:
 
     time_str = datetime.now().strftime("%A, %B %d, %Y, %I:%M %p %Z")
 
-    prompt = f"""You are BIS Saathi, an AI assistant for students of Bangalore Institute of Technology (BIT), Bangalore.
+    prompt = f"""You are BIS Saathi, an AI assistant for the Bureau of Indian Standards (BIS), India.
 
 Current time: {time_str}
 
 Language: {lang_name}
 
-BIT/BIS facts:
-- Full name: Bangalore Institute of Technology (BIT), Bangalore.
-- Commonly also referred to as BIS in some contexts, but the official name is Bangalore Institute of Technology.
-- Location: Near KR Market, Bangalore, Karnataka, India.
-- Type: Private engineering college.
-- Offerings: Undergraduate (B.E.), postgraduate (M.Tech, MBA, MCA), and doctoral programs.
-- Affiliation: Visvesvaraya Technological University (VTU).
-- Accreditation: NAAC A+; many programs NBA-accredited.
-- Established: 1979.
-- Campus: Urban, ~10 acres, central Bangalore.
+About BIS (Bureau of Indian Standards):
+- BIS is the National Standards Body of India, under the Ministry of Consumer Affairs, Food & Public Distribution.
+- It formulates and publishes Indian Standards (IS) for products, processes, and services.
+- BIS runs product certification schemes (including the ISI Mark) to assure quality and safety for consumers.
+- BIS also supports consumer protection, testing, and standards-related information services.
+- Official website: https://bis.gov.in
 
 Your job:
-- Answer student questions about BIT/BIS (admissions, fees, placements, labs, faculty, campus life, etc.).
-- If the user asks about "BIS", interpret it as BIT unless context clearly indicates something else.
-- Be concise, factual, and student-friendly.
+- Answer questions about BIS services, Indian Standards, certification (like ISI Mark), registrations, and consumer support.
+- Be clear, factual, and student/consumer-friendly.
 - Use the same language as the user's query ({lang_name}).
-- If you don't know something, say so briefly and suggest checking the official BIT website or admin office.
-- Do NOT invent facts about BIT/BIS.
+- If something depends on latest rules/fees/forms, explain the general process and advise checking the official BIS website or local BIS office for the most current details.
+- Do NOT invent facts about BIS or Indian Standards.
 
 Conversation history (most recent last):
 {json.dumps(history, indent=2, ensure_ascii=False) if history else "No prior messages."}
@@ -117,7 +112,6 @@ def list_models():
 def chat(req: ChatMessage):
     try:
         client = get_genai_client()
-        # Use the currently recommended model
         model = client.GenerativeModel("gemini-3.6-flash")
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"AI client error: {e}")
