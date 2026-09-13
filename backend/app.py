@@ -33,8 +33,8 @@ def model_or_error():
             detail="AI is not configured. Add GEMINI_API_KEY to .env, then restart the server."
         )
     genai.configure(api_key=api_key)
-    # Explicitly use gemini-1.5-pro
-    return genai.GenerativeModel("gemini-1.5-pro")
+    # Use the older, widely supported alias
+    return genai.GenerativeModel("gemini-pro")
 
 def build_prompt(message: str, language: str, history: list) -> str:
     lang_name = {
@@ -94,7 +94,6 @@ def root():
 def health():
     try:
         model = model_or_error()
-        # Return the model's exact name as seen by the SDK
         return {
             "status": "ok",
             "ai": "connected",
