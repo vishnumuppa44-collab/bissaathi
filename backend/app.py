@@ -119,7 +119,8 @@ def model_or_error():
     if not api_key:
         raise HTTPException(status_code=503, detail="AI is not configured. Add GEMINI_API_KEY to .env, then restart the server.")
     genai.configure(api_key=api_key)
-    return genai.GenerativeModel("gemini-1.5-flash")
+    # Use explicit model path
+    return genai.GenerativeModel("models/gemini-1.5-flash")
 
 
 LANG = {"en": "English", "hi": "Hindi", "te": "Telugu"}
@@ -167,14 +168,18 @@ def chat(request: ChatRequest):
 
     user = f"""User question: {request.message}\n\nConversation context:\n{prior or '(none)'}\n\nVerified retrieved excerpts:\n{context}"""
 
-    model = model_or_error()
-    response = model.generate_content(
-        contents=[system, user],
-        generation_config=genai.types.GenerationConfig(
-            temperature=0.15
+    try:
+        model = model_or_error()
+        response = model.generate_content(
+            contents=[system, user],
+            generation_config=genai.types.GenerationConfig(
+                temperature=0.15
+            )
         )
-    )
-    answer = response.text or "I could not produce an answer."
+        answer = response.text or "I could not produce an answer."
+    except Exception as e:
+        # Avoid 500 without CORS; return a normal error response
+        raise HTTPException(status_code=502, detail=f"AI service error: {e}")
 
     citations = [{"label": f"S{i+1}", "source": d["source"], "chunk": d["chunk"], "excerpt": d["text"][:380] + ("…" if len(d["text"]) > 380 else "")} for i, d in enumerate(docs)]
     return ChatResponse(answer=answer, citations=citations, language=request.language)
