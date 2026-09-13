@@ -35,37 +35,6 @@ def get_genai_client():
     genai.configure(api_key=api_key)
     return genai
 
-@app.get("/")
-def root():
-    return {"message": "BIS Saathi API is running. Visit /api/health for status."}
-
-@app.get("/api/health")
-def health():
-    try:
-        client = get_genai_client()
-        # Just check we can configure; don't create a model here
-        return {"status": "ok", "ai": "configured"}
-    except Exception as e:
-        return {"status": "ok", "ai": "error", "detail": str(e)}
-
-@app.get("/api/models")
-def list_models():
-    try:
-        client = get_genai_client()
-        # List all models visible to this API key
-        models = list(client.list_models())
-        # Return a small slice of info for each
-        result = []
-        for m in models:
-            result.append({
-                "name": getattr(m, "name", None),
-                "display_name": getattr(m, "display_name", None),
-                "supported_methods": getattr(m, "supported_generation_methods", None),
-            })
-        return {"models": result}
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Failed to list models: {e}")
-
 def build_prompt(message: str, language: str, history: list) -> str:
     lang_name = {
         "en": "English",
@@ -116,12 +85,40 @@ Respond in {lang_name}, clearly and helpfully.
 """
     return prompt
 
+@app.get("/")
+def root():
+    return {"message": "BIS Saathi API is running. Visit /api/health for status."}
+
+@app.get("/api/health")
+def health():
+    try:
+        client = get_genai_client()
+        return {"status": "ok", "ai": "configured"}
+    except Exception as e:
+        return {"status": "ok", "ai": "error", "detail": str(e)}
+
+@app.get("/api/models")
+def list_models():
+    try:
+        client = get_genai_client()
+        models = list(client.list_models())
+        result = []
+        for m in models:
+            result.append({
+                "name": getattr(m, "name", None),
+                "display_name": getattr(m, "display_name", None),
+                "supported_methods": getattr(m, "supported_generation_methods", None),
+            })
+        return {"models": result}
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Failed to list models: {e}")
+
 @app.post("/api/chat")
 def chat(req: ChatMessage):
     try:
         client = get_genai_client()
-        # Try the simplest known model name
-        model = client.GenerativeModel("gemini-1.5-flash")
+        # Use a model that is confirmed available and supports generateContent
+        model = client.GenerativeModel("gemini-2.5-flash")
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"AI client error: {e}")
 
