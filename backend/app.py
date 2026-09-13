@@ -117,8 +117,8 @@ def list_models():
 def chat(req: ChatMessage):
     try:
         client = get_genai_client()
-        # Use a model that is confirmed available and supports generateContent
-        model = client.GenerativeModel("gemini-2.5-flash")
+        # Use the currently recommended model
+        model = client.GenerativeModel("gemini-3.6-flash")
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"AI client error: {e}")
 
