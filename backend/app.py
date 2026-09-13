@@ -119,7 +119,7 @@ def model_or_error():
     if not api_key:
         raise HTTPException(status_code=503, detail="AI is not configured. Add GEMINI_API_KEY to .env, then restart the server.")
     genai.configure(api_key=api_key)
-    return genai.GenerativeModel("gemini-3.6-flash")
+    return genai.GenerativeModel("gemini-1.5-flash")
 
 
 LANG = {"en": "English", "hi": "Hindi", "te": "Telugu"}
