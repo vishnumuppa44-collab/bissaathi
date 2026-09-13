@@ -33,7 +33,7 @@ def model_or_error():
             detail="AI is not configured. Add GEMINI_API_KEY to .env, then restart the server."
         )
     genai.configure(api_key=api_key)
-    # Use a model that is almost always enabled
+    # Explicitly use gemini-1.5-pro
     return genai.GenerativeModel("gemini-1.5-pro")
 
 def build_prompt(message: str, language: str, history: list) -> str:
@@ -94,7 +94,12 @@ def root():
 def health():
     try:
         model = model_or_error()
-        return {"status": "ok", "ai": "connected"}
+        # Return the model's exact name as seen by the SDK
+        return {
+            "status": "ok",
+            "ai": "connected",
+            "model_name": model.model_name
+        }
     except Exception as e:
         return {"status": "ok", "ai": "error", "detail": str(e)}
 
